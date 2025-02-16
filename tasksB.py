@@ -2,14 +2,27 @@
 
 # B1 & B2: Security Checks
 import os
+import subprocess
 
-def B12(filepath):
-    if filepath.startswith('/data'):
-        # raise PermissionError("Access outside /data is not allowed.")
-        # print("Access outside /data is not allowed.")
-        return True
-    else:
-        return False
+BASE_DIR = os.path.join(os.getcwd(), "data")
+os.makedirs(BASE_DIR, exist_ok=True)
+
+def B12(filepath: str):
+
+    """
+    Ensures that all file operations are restricted to the `data` directory.
+    """
+    abs_path = os.path.abspath(filepath)
+    if not abs_path.startswith(os.path.abspath(BASE_DIR)):
+        raise PermissionError(f"Access denied to path: {filepath}")
+    """"""
+    
+    """
+    Override any deletion attempt (placeholder function).
+    """
+    raise PermissionError("Deletion operations are not allowed.")
+
+
 
 # B3: Fetch Data from an API
 def B3(url, save_path):
@@ -20,34 +33,13 @@ def B3(url, save_path):
     with open(save_path, 'w') as file:
         file.write(response.text)
 
-
 # B4: Clone a Git Repo and Make a Commit
-# def clone_git_repo(repo_url, commit_message):
-#     import subprocess
-#     subprocess.run(["git", "clone", repo_url, "/data/repo"])
-#     subprocess.run(["git", "-C", "/data/repo", "commit", "-m", commit_message])
-
-import subprocess
-
 def B4(repo_url, commit_message):
+    
     subprocess.run(["git", "clone", repo_url, "/data/repo"])
     subprocess.run(["git", "-C", "/data/repo", "commit", "-m", commit_message])
 
-
 # B5: Run SQL Query
-# def B5(db_path, query, output_filename):
-#     if not B12(db_path):
-#         return None
-#     import sqlite3, duckdb # type: ignore
-#     conn = sqlite3.connect(db_path) if db_path.endswith('.db') else duckdb.connect(db_path)
-#     cur = conn.cursor()
-#     cur.execute(query)
-#     result = cur.fetchall()
-#     conn.close()
-#     with open(output_filename, 'w') as file:
-#         file.write(str(result))
-#     return result
-
 def B5(db_path, query, output_filename):
     if not B12(db_path):
         return None
@@ -60,7 +52,6 @@ def B5(db_path, query, output_filename):
     with open(output_filename, 'w') as file:
         file.write(str(result))
     return result
-
 
 # B6: Web Scraping
 def B6(url, output_filename):
@@ -89,14 +80,6 @@ def B7(image_path, output_path, resize=None):
 #     with open(audio_path, 'rb') as audio_file:
 #         return openai.Audio.transcribe("whisper-1", audio_file)
 
-def B8(audio_path):
-    import openai
-    if not B12(audio_path):
-        return None
-    with open(audio_path, 'rb') as audio_file:
-        return openai.Audio.transcribe("whisper-1", audio_file)
-
-
 # B9: Markdown to HTML Conversion
 def B9(md_path, output_path):
     import markdown
@@ -112,20 +95,6 @@ def B9(md_path, output_path):
 # B10: API Endpoint for CSV Filtering
 # from flask import Flask, request, jsonify
 # app = Flask(__name__)
-# @app.route('/filter_csv', methods=['POST'])
-# def filter_csv():
-#     import pandas as pd
-#     data = request.json
-#     csv_path, filter_column, filter_value = data['csv_path'], data['filter_column'], data['filter_value']
-#     B12(csv_path)
-#     df = pd.read_csv(csv_path)
-#     filtered = df[df[filter_column] == filter_value]
-#     return jsonify(filtered.to_dict(orient='records'))
-
-
-# from flask import Flask, request, jsonify
-# app = Flask(__name__)
-
 # @app.route('/filter_csv', methods=['POST'])
 # def filter_csv():
 #     import pandas as pd

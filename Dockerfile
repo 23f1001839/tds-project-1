@@ -7,17 +7,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certifi
 ADD https://astral.sh/uv/install.sh /uv-installer.sh
 RUN sh /uv-installer.sh && rm /uv-installer.sh
 
-# Install FastAPI and Uvicorn
-RUN pip install fastapi uvicorn
-
-# Ensure the installed binary is on the `PATH`
-ENV PATH="/root/.local/bin:$PATH"
+# Install Python packages
+RUN pip install fastapi uvicorn httpx python-dotenv requests python-dateutil scipy numpy pandas
 
 # Set up the application directory
 WORKDIR /app
 
-# Copy application files
-COPY app.py /app
+# Copy all application files
+COPY . /app
 
-# Explicitly set the correct binary path and use `sh -c`
-CMD ["/root/.local/bin/uv", "run", "app.py"]
+# Expose the port for FastAPI
+EXPOSE 8000
+
+# Command to run FastAPI with Uvicorn
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
